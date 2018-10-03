@@ -2,3 +2,6 @@
 SecureApiWithDotNetCore/bin/
 SecureApiWithDotNetCore/obj/
 SecureApiWithDotNetCore/SecureApiWithDotNetCore.csproj.user
+MyCodeCamp.Data/MyCodeCamp.Data.csproj.user
+MyCodeCamp.Data/bin/
+MyCodeCamp.Data/obj/

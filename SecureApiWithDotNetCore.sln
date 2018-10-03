@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureApiWithDotNetCore", "SecureApiWithDotNetCore\SecureApiWithDotNetCore.csproj", "{B1C125A8-FBB6-482A-81E8-DD26158AC9A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecureApiWithDotNetCore", "SecureApiWithDotNetCore\SecureApiWithDotNetCore.csproj", "{B1C125A8-FBB6-482A-81E8-DD26158AC9A3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCodeCamp.Data", "MyCodeCamp.Data\MyCodeCamp.Data.csproj", "{8DC4E3F6-A8D1-42BF-B509-612DA34B26DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{B1C125A8-FBB6-482A-81E8-DD26158AC9A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1C125A8-FBB6-482A-81E8-DD26158AC9A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1C125A8-FBB6-482A-81E8-DD26158AC9A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DC4E3F6-A8D1-42BF-B509-612DA34B26DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DC4E3F6-A8D1-42BF-B509-612DA34B26DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DC4E3F6-A8D1-42BF-B509-612DA34B26DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DC4E3F6-A8D1-42BF-B509-612DA34B26DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

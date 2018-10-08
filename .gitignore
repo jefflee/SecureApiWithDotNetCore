@@ -1,7 +1,6 @@
 .vs/
-SecureApiWithDotNetCore/bin/
-SecureApiWithDotNetCore/obj/
-SecureApiWithDotNetCore/SecureApiWithDotNetCore.csproj.user
-MyCodeCamp.Data/MyCodeCamp.Data.csproj.user
+*.user
 MyCodeCamp.Data/bin/
 MyCodeCamp.Data/obj/
+MyCodeCamp/bin/
+MyCodeCamp/obj/

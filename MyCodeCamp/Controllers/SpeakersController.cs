@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MyCodeCamp.Data;
@@ -15,28 +17,44 @@ namespace MyCodeCamp.Controllers
 {
   [Route("api/camps/{moniker}/speakers")]
   [ValidateModel]
+  [ApiVersion("1.0")]
+  [ApiVersion("1.1")]
   public class SpeakersController : BaseController
   {
-    private ILogger<SpeakersController> _logger;
-    private IMapper _mapper;
-    private ICampRepository _repository;
+    protected ILogger<SpeakersController> _logger;
+    protected IMapper _mapper;
+    protected ICampRepository _repository;
+    protected UserManager<CampUser> _userMgr;
 
     public SpeakersController(ICampRepository repository,
       ILogger<SpeakersController> logger,
-      IMapper mapper)
+      IMapper mapper,
+      UserManager<CampUser> userMgr)
     {
       _repository = repository;
       _logger = logger;
       _mapper = mapper;
+      _userMgr = userMgr;
     }
 
     [HttpGet]
+    [MapToApiVersion("1.0")]
     public IActionResult Get(string moniker, bool includeTalks = false)
     {
       var speakers = includeTalks ? _repository.GetSpeakersByMonikerWithTalks(moniker) : _repository.GetSpeakersByMoniker(moniker);
 
       return Ok(_mapper.Map<IEnumerable<SpeakerModel>>(speakers));
     }
+
+    [HttpGet]
+    [MapToApiVersion("1.1")]
+    public virtual IActionResult GetWithCount(string moniker, bool includeTalks = false)
+    {
+      var speakers = includeTalks ? _repository.GetSpeakersByMonikerWithTalks(moniker) : _repository.GetSpeakersByMoniker(moniker);
+
+      return Ok(new { count = speakers.Count(), results = _mapper.Map<IEnumerable<SpeakerModel>>(speakers) });
+    }
+
 
     [HttpGet("{id}", Name = "SpeakerGet")]
     public IActionResult Get(string moniker, int id, bool includeTalks = false)
@@ -49,6 +67,7 @@ namespace MyCodeCamp.Controllers
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Post(string moniker, [FromBody]SpeakerModel model)
     {
       try
@@ -59,12 +78,18 @@ namespace MyCodeCamp.Controllers
         var speaker = _mapper.Map<Speaker>(model);
         speaker.Camp = camp;
 
-        _repository.Add(speaker);
-
-        if (await _repository.SaveAllAsync())
+        var campUser = await _userMgr.FindByNameAsync(this.User.Identity.Name);
+        if (campUser != null)
         {
-          var url = Url.Link("SpeakerGet", new { moniker = camp.Moniker, id = speaker.Id });
-          return Created(url, _mapper.Map<SpeakerModel>(speaker));
+          speaker.User = campUser;
+
+          _repository.Add(speaker);
+
+          if (await _repository.SaveAllAsync())
+          {
+            var url = Url.Link("SpeakerGet", new { moniker = camp.Moniker, id = speaker.Id });
+            return Created(url, _mapper.Map<SpeakerModel>(speaker));
+          }
         }
       }
       catch (Exception ex)
@@ -76,6 +101,7 @@ namespace MyCodeCamp.Controllers
     }
 
     [HttpPut("{id}")]
+    [Authorize]
     public async Task<IActionResult> Put(string moniker,
       int id,
       [FromBody] SpeakerModel model)
@@ -85,6 +111,8 @@ namespace MyCodeCamp.Controllers
         var speaker = _repository.GetSpeaker(id);
         if (speaker == null) return NotFound();
         if (speaker.Camp.Moniker != moniker) return BadRequest("Speaker and Camp do not match");
+
+        if (speaker.User.UserName != this.User.Identity.Name) return Forbid();
 
         _mapper.Map(model, speaker);
 
@@ -102,6 +130,7 @@ namespace MyCodeCamp.Controllers
     }
 
     [HttpDelete("{id}")]
+    [Authorize]
     public async Task<IActionResult> Delete(string moniker, int id)
     {
       try
@@ -109,6 +138,8 @@ namespace MyCodeCamp.Controllers
         var speaker = _repository.GetSpeaker(id);
         if (speaker == null) return NotFound();
         if (speaker.Camp.Moniker != moniker) return BadRequest("Speaker and Camp do not match");
+
+        if (speaker.User.UserName != this.User.Identity.Name) return Forbid();
 
         _repository.Delete(speaker);
 
